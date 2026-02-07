@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== ADMIN AUTH =====
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+}
+
+// ===== PRODUCTS =====
+model Product {
+  id              Int       @id @default(autoincrement())
+  name            String
+  slug            String    @unique
+  category        String
+  price           Decimal   @db.Decimal(10, 2)
+  originalPrice   Decimal?  @db.Decimal(10, 2)
+  description     String
+  longDescription String    @db.Text
+  features        Json
+  rating          Decimal   @default(0) @db.Decimal(3, 2)
+  reviewCount     Int       @default(0)
+  badge           String?
+  imageUrl        String?
+  color           String
+  icon            String
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  reviews         Review[]
+  orderItems      OrderItem[]
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  stars     Int
+  text      String
+  author    String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ===== BLOG =====
+model BlogPost {
+  id         Int      @id @default(autoincrement())
+  title      String
+  slug       String   @unique
+  excerpt    String
+  content    String   @db.Text
+  tag        String
+  tagIcon    String
+  author     String
+  authorInit String
+  readTime   String
+  featured   Boolean  @default(false)
+  imageUrl   String?
+  published  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ===== COMMUNITY =====
+model CommunityPost {
+  id            Int              @id @default(autoincrement())
+  anonymousName String
+  avatarInitial String
+  avatarColor   String
+  topic         String
+  body          String           @db.Text
+  verified      Boolean          @default(false)
+  likes         Int              @default(0)
+  commentCount  Int              @default(0)
+  sessionId     String
+  flagged       Boolean          @default(false)
+  approved      Boolean          @default(true)
+  createdAt     DateTime         @default(now())
+  replies       CommunityReply[]
+  likesRecords  CommunityLike[]
+}
+
+model CommunityReply {
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    String
+  text      String
+  sessionId String
+  createdAt DateTime      @default(now())
+}
+
+model CommunityLike {
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  sessionId String
+  createdAt DateTime      @default(now())
+
+  @@unique([postId, sessionId])
+}
+
+// ===== SITE CONTENT =====
+model SiteContent {
+  id    String @id @default("main")
+  key   String @unique
+  value Json
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  text      String
+  author    String
+  avatar    String
+  color     String
+  location  String
+  verified  Boolean  @default(true)
+  stars     Int
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model Faq {
+  id        Int     @id @default(autoincrement())
+  question  String
+  answer    String  @db.Text
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+}
+
+// ===== NEWSLETTER =====
+model Subscriber {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  verified     Boolean  @default(false)
+  subscribedAt DateTime @default(now())
+}
+
+// ===== ORDERS =====
+model Order {
+  id              Int         @id @default(autoincrement())
+  stripeSessionId String      @unique
+  stripePaymentId String?
+  email           String
+  status          String      @default("pending")
+  subtotal        Decimal     @db.Decimal(10, 2)
+  shipping        Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  shippingAddress Json
+  billingName     String      @default("VLR Wellness")
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+}

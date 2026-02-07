@@ -1,0 +1,52 @@
+{
+  "name": "velorious",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "next": "14.2.35",
+    "@prisma/client": "^5.22.0",
+    "next-auth": "^4.24.0",
+    "stripe": "^17.0.0",
+    "@stripe/stripe-js": "^4.0.0",
+    "zustand": "^5.0.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.5.0",
+    "lucide-react": "^0.460.0",
+    "bcryptjs": "^2.4.3",
+    "@tiptap/react": "^2.10.0",
+    "@tiptap/starter-kit": "^2.10.0",
+    "@tiptap/extension-image": "^2.10.0",
+    "@tiptap/pm": "^2.10.0",
+    "resend": "^4.0.0",
+    "uploadthing": "^7.0.0",
+    "@uploadthing/react": "^7.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/bcryptjs": "^2.4.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.35",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.0"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
