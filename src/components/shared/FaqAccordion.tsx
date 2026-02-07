@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Faq } from '@/types';
+
+interface FaqItem {
+  id: number;
+  question: string;
+  answer: string;
+}
 
 interface FaqAccordionProps {
-  items: Faq[];
+  items: FaqItem[];
 }
 
 export default function FaqAccordion({ items }: FaqAccordionProps) {
