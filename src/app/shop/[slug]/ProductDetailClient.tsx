@@ -52,7 +52,7 @@ export default function ProductDetailClient({
       name: product.name,
       price: Number(product.price),
       quantity,
-      imageUrl: product.image || null,
+      imageUrl: product.imageUrl || null,
       color: product.category,
       icon: 'package',
       slug: product.slug,

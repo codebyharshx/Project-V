@@ -28,10 +28,10 @@ export async function generateMetadata({
       title: product.name,
       description: product.description,
       type: 'website',
-      images: product.image
+      images: product.imageUrl
         ? [
             {
-              url: product.image,
+              url: product.imageUrl,
               width: 800,
               height: 800,
               alt: product.name,
@@ -57,7 +57,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  // Serialize Decimal fields
+  // Serialize Decimal and Date fields
   const serializedProduct = {
     ...product,
     id: product.id.toString(),
@@ -72,8 +72,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     featured: product.badge === 'Bestseller' || product.badge === 'Popular',
     new: product.badge === 'New',
     sustainable: false,
-    benefits: Array.isArray(product.features) ? product.features : [],
+    benefits: Array.isArray(product.features) ? (product.features as string[]) : [],
     ingredients: [],
+    createdAt: product.createdAt.toISOString(),
+    updatedAt: product.updatedAt.toISOString(),
+    reviews: product.reviews.map(r => ({
+      ...r,
+      createdAt: r.createdAt.toISOString(),
+      // Backward-compatible fields
+      title: r.text.substring(0, 50),
+      content: r.text,
+      rating: r.stars,
+    })),
   };
 
   // Fetch related products from same category
@@ -99,8 +109,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
     featured: p.badge === 'Bestseller' || p.badge === 'Popular',
     new: p.badge === 'New',
     sustainable: false,
-    benefits: Array.isArray(p.features) ? p.features : [],
+    benefits: Array.isArray(p.features) ? (p.features as string[]) : [],
     ingredients: [],
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
   }));
 
   return (

@@ -27,7 +27,20 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
 
   // Get fallback gradient if no image
   const getFallbackGradient = () => {
-    return `from-${post.category?.toLowerCase() === 'wellness' ? 'sage-light' : 'blush-light'} to-${post.category?.toLowerCase() === 'wellness' ? 'sage' : 'blush'}`;
+    return `from-${post.tag?.toLowerCase() === 'wellness' ? 'sage-light' : 'blush-light'} to-${post.tag?.toLowerCase() === 'wellness' ? 'sage' : 'blush'}`;
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   if (variant === 'featured') {
@@ -40,9 +53,9 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
         >
           {/* Background Image */}
           <div className="relative w-full h-full">
-            {post.image ? (
+            {post.imageUrl ? (
               <Image
-                src={post.image}
+                src={post.imageUrl}
                 alt={post.title}
                 fill
                 className={`object-cover transition-transform duration-500 ${
@@ -62,16 +75,14 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-transparent group-hover:from-charcoal/85 transition-all duration-300" />
 
           {/* Tag Badge */}
-          {post.tags && post.tags.length > 0 && (
+          {post.tag && (
             <div className="absolute top-6 left-6 z-10">
               <div
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${getTagBgGradient(post.tags[0])} backdrop-blur-sm`}
+                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${getTagBgGradient(post.tag)} backdrop-blur-sm`}
               >
-                {post.tags[0] && (
-                  <span className="text-xs uppercase font-inter font-bold text-charcoal">
-                    {post.tags[0]}
-                  </span>
-                )}
+                <span className="text-xs uppercase font-inter font-bold text-charcoal">
+                  {post.tag}
+                </span>
               </div>
             </div>
           )}
@@ -86,10 +97,10 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
             </p>
             <div className="flex items-center gap-4 text-white/70 text-sm font-inter">
               <span>By {post.author}</span>
-              {post.tags && post.tags[0] && (
+              {post.createdAt && (
                 <>
                   <span>•</span>
-                  <span>{post.publishedAt}</span>
+                  <span>{formatDate(post.createdAt)}</span>
                 </>
               )}
             </div>
@@ -108,9 +119,9 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
       >
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden rounded-lg bg-cream mb-4">
-          {post.image ? (
+          {post.imageUrl ? (
             <Image
-              src={post.image}
+              src={post.imageUrl}
               alt={post.title}
               fill
               className={`object-cover transition-transform duration-500 ${
@@ -125,13 +136,13 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
           )}
 
           {/* Tag Badge Overlay */}
-          {post.tags && post.tags.length > 0 && (
+          {post.tag && (
             <div className="absolute top-4 left-4 z-10">
               <div
-                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${getTagBgGradient(post.tags[0])} backdrop-blur-sm`}
+                className={`inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r ${getTagBgGradient(post.tag)} backdrop-blur-sm`}
               >
                 <span className="text-xs uppercase font-inter font-bold text-charcoal">
-                  {post.tags[0]}
+                  {post.tag}
                 </span>
               </div>
             </div>
@@ -155,7 +166,7 @@ export default function BlogCard({ post, variant = 'default' }: BlogCardProps) {
             </div>
             <span>{post.author}</span>
           </div>
-          <span>{post.publishedAt}</span>
+          <span>{formatDate(post.createdAt)}</span>
         </div>
       </div>
     </Link>

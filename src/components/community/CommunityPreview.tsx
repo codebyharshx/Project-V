@@ -72,7 +72,7 @@ export default function CommunityPreview({ posts }: CommunityPreviewProps) {
                       {/* Avatar */}
                       <div
                         className={`w-9 h-9 rounded-full bg-gradient-to-br ${getColorClass(
-                          post.avatarColor
+                          post.avatarColor || 'from-sage to-sage-dark'
                         )} flex items-center justify-center text-white font-bold text-xs flex-shrink-0`}
                       >
                         {getInitial(post.author)}

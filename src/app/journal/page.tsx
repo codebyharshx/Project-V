@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import JournalClient from './JournalClient';
+import { BlogPost } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Journal — Velorious',
@@ -14,32 +15,25 @@ export const metadata: Metadata = {
   },
 };
 
-// Serialize helper for Decimal and Date fields
-function serializeData<T>(data: T): T {
-  if (!data) return data;
-
-  if (Array.isArray(data)) {
-    return data.map((item) => serializeData(item)) as T;
-  }
-
-  if (data instanceof Date) {
-    return (data.toISOString() as unknown) as T;
-  }
-
-  if (typeof data === 'object' && data !== null) {
-    const obj = data as Record<string, any>;
-    if (obj.constructor?.name === 'Decimal') {
-      return (parseFloat(obj.toString()) as unknown) as T;
-    }
-
-    const result: Record<string, any> = {};
-    for (const key in obj) {
-      result[key] = serializeData(obj[key]);
-    }
-    return result as T;
-  }
-
-  return data;
+// Transform Prisma blog posts to BlogPost interface
+function transformPosts(posts: Awaited<ReturnType<typeof prisma.blogPost.findMany>>): BlogPost[] {
+  return posts.map(p => ({
+    id: p.id,
+    title: p.title,
+    slug: p.slug,
+    excerpt: p.excerpt,
+    content: p.content,
+    author: p.author,
+    authorInit: p.authorInit,
+    tag: p.tag,
+    tagIcon: p.tagIcon,
+    readTime: p.readTime,
+    featured: p.featured,
+    imageUrl: p.imageUrl,
+    published: p.published,
+    createdAt: p.createdAt.toISOString(),
+    updatedAt: p.updatedAt.toISOString(),
+  }));
 }
 
 export default async function JournalPage() {
@@ -50,7 +44,7 @@ export default async function JournalPage() {
       orderBy: { createdAt: 'desc' },
     });
 
-    const serializedPosts = serializeData(posts);
+    const transformedPosts = transformPosts(posts);
 
     return (
       <main className="min-h-screen bg-cream">
@@ -76,7 +70,7 @@ export default async function JournalPage() {
         </div>
 
         {/* Journal Client Component */}
-        <JournalClient initialPosts={serializedPosts} />
+        <JournalClient initialPosts={transformedPosts} />
       </main>
     );
   } catch (error) {

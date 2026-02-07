@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import CommunityClient from './CommunityClient';
+import { CommunityPost } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Community — Velorious',
@@ -14,32 +15,32 @@ export const metadata: Metadata = {
   },
 };
 
-// Serialize helper for Decimal and Date fields
-function serializeData<T>(data: T): T {
-  if (!data) return data;
+// Transform Prisma data to CommunityPost interface
+type PostWithReplies = Awaited<ReturnType<typeof prisma.communityPost.findMany<{
+  include: { replies: true }
+}>>>[number];
 
-  if (Array.isArray(data)) {
-    return data.map((item) => serializeData(item)) as T;
-  }
-
-  if (data instanceof Date) {
-    return (data.toISOString() as unknown) as T;
-  }
-
-  if (typeof data === 'object' && data !== null) {
-    const obj = data as Record<string, any>;
-    if (obj.constructor?.name === 'Decimal') {
-      return (parseFloat(obj.toString()) as unknown) as T;
-    }
-
-    const result: Record<string, any> = {};
-    for (const key in obj) {
-      result[key] = serializeData(obj[key]);
-    }
-    return result as T;
-  }
-
-  return data;
+function transformPosts(posts: PostWithReplies[]): CommunityPost[] {
+  return posts.map(post => ({
+    id: post.id.toString(),
+    title: post.topic,
+    content: post.body,
+    author: post.anonymousName,
+    authorId: post.sessionId,
+    topic: post.topic,
+    replies: (post.replies || []).map(reply => ({
+      id: reply.id.toString(),
+      content: reply.text,
+      author: reply.author,
+      createdAt: reply.createdAt.toISOString(),
+      likes: 0,
+    })),
+    replyCount: post.commentCount,
+    likes: post.likes,
+    liked: false,
+    createdAt: post.createdAt.toISOString(),
+    updatedAt: post.createdAt.toISOString(),
+  }));
 }
 
 export default async function CommunityPage() {
@@ -67,7 +68,7 @@ export default async function CommunityPage() {
       },
     });
 
-    const serializedPosts = serializeData(posts);
+    const transformedPosts = transformPosts(posts);
 
     return (
       <main className="min-h-screen bg-cream">
@@ -81,7 +82,7 @@ export default async function CommunityPage() {
         </div>
 
         {/* Community Client Component */}
-        <CommunityClient initialPosts={serializedPosts} totalPosts={totalPosts} />
+        <CommunityClient initialPosts={transformedPosts} totalPosts={totalPosts} />
       </main>
     );
   } catch (error) {

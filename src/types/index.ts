@@ -1,44 +1,53 @@
-// Product Type
+// Product Type (matches Prisma schema with optional backward-compat fields)
 export interface Product {
-  id: string
+  id: number | string
   name: string
   slug: string
+  category: string
+  price: number
+  originalPrice?: number | null
   description: string
   longDescription: string
-  price: number
-  originalPrice?: number
-  category: string
-  image: string
-  images: string[]
-  ingredients: string[]
-  benefits: string[]
-  skinType?: string[]
-  scent?: string
-  volume?: string
-  weight?: string
+  features: unknown
   rating: number
   reviewCount: number
-  inStock: boolean
-  featured: boolean
-  new: boolean
-  sustainable: boolean
+  badge?: string | null
+  imageUrl?: string | null
+  color: string
+  icon: string
+  active: boolean
   createdAt: string
   updatedAt: string
+  // Backward-compatible fields for client components
+  image?: string
+  images?: string[]
+  inStock?: boolean
+  featured?: boolean
+  new?: boolean
+  sustainable?: boolean
+  benefits?: string[]
+  ingredients?: string[]
+  volume?: string
+  weight?: string
+  skinType?: string[]
+  scent?: string
 }
 
 // Blog Post Type
 export interface BlogPost {
-  id: string
+  id: number | string
   title: string
   slug: string
   excerpt: string
   content: string
   author: string
-  category: string
-  image: string
-  tags: string[]
+  authorInit?: string
+  tag: string
+  tagIcon?: string
+  readTime?: string
+  featured?: boolean
+  imageUrl?: string | null
   published: boolean
-  publishedAt: string
   createdAt: string
   updatedAt: string
 }
@@ -68,6 +77,9 @@ export interface CommunityPost {
   likes: number
   liked?: boolean
   createdAt: string
+  avatarColor?: string
+  avatarInitial?: string
+  verified?: boolean
   updatedAt: string
 }
 
@@ -161,18 +173,19 @@ export interface User {
   updatedAt: string
 }
 
-// Review Type
+// Review Type (matches Prisma schema with backward-compat fields)
 export interface Review {
-  id: string
-  productId: string
-  rating: number
-  title: string
-  content: string
+  id: number | string
+  productId: number | string
+  stars: number
+  text: string
   author: string
   verified: boolean
-  helpful: number
   createdAt: string
-  updatedAt: string
+  // Backward-compatible fields for client components
+  title: string
+  content: string
+  rating: number
 }
 
 // Newsletter Subscription Type

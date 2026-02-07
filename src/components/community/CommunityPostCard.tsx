@@ -85,10 +85,10 @@ export default function CommunityPostCard({
           {/* Avatar */}
           <div
             className={`w-10 h-10 rounded-full bg-gradient-to-br ${getColorClass(
-              post.avatarColor
+              post.avatarColor || 'from-sage to-sage-dark'
             )} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}
           >
-            {post.avatarInitial}
+            {post.avatarInitial || post.author?.charAt(0).toUpperCase() || 'A'}
           </div>
 
           {/* Author Info */}

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import BlogCard from '@/components/blog/BlogCard';
+import { BlogPost } from '@/types';
 
 // Serialize helper for Decimal and Date fields
 function serializeData<T>(data: T): T {
@@ -94,8 +95,24 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       take: 3,
     });
 
-    const serializedPost = serializeData(post);
-    const serializedRelatedPosts = serializeData(relatedPosts);
+    // Transform related posts to BlogPost interface
+    const transformedRelatedPosts: BlogPost[] = relatedPosts.map(p => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt,
+      content: p.content,
+      author: p.author,
+      authorInit: p.authorInit,
+      tag: p.tag,
+      tagIcon: p.tagIcon,
+      readTime: p.readTime,
+      featured: p.featured,
+      imageUrl: p.imageUrl,
+      published: p.published,
+      createdAt: p.createdAt.toISOString(),
+      updatedAt: p.updatedAt.toISOString(),
+    }));
 
     // Parse publishedAt date
     const publishedDate = new Date(post.createdAt).toLocaleDateString('en-US', {
@@ -187,14 +204,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </article>
 
         {/* Related Posts Section */}
-        {serializedRelatedPosts.length > 0 && (
+        {transformedRelatedPosts.length > 0 && (
           <section className="bg-white py-16 md:py-20 mt-12">
             <div className="max-w-7xl mx-auto px-4 md:px-6">
               <h2 className="text-3xl md:text-4xl font-playfair font-bold text-charcoal mb-10">
                 More from {post.tag}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {serializedRelatedPosts.map((relatedPost, index) => (
+                {transformedRelatedPosts.map((relatedPost, index) => (
                   <div key={relatedPost.id} className="animate-fadeUp" style={{ animationDelay: `${index * 50}ms` }}>
                     <BlogCard post={relatedPost} />
                   </div>

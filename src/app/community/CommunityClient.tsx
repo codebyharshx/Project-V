@@ -93,7 +93,7 @@ export default function CommunityClient({ initialPosts, totalPosts }: CommunityC
       const result = await response.json();
 
       setPosts(posts.map(post =>
-        post.id === postIdNum
+        post.id === postId
           ? { ...post, likes: result.likesCount, liked: result.isLiked }
           : post
       ));
@@ -123,7 +123,7 @@ export default function CommunityClient({ initialPosts, totalPosts }: CommunityC
       const result = await response.json();
 
       setPosts(posts.map(post =>
-        post.id === postIdNum
+        post.id === postId
           ? {
               ...post,
               replies: [...(post.replies || []), result.reply],

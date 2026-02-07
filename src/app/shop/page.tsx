@@ -76,8 +76,10 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
       featured: product.badge === 'Bestseller' || product.badge === 'Popular',
       new: product.badge === 'New',
       sustainable: false,
-      benefits: Array.isArray(product.features) ? product.features : [],
+      benefits: Array.isArray(product.features) ? (product.features as string[]) : [],
       ingredients: [],
+      createdAt: product.createdAt.toISOString(),
+      updatedAt: product.updatedAt.toISOString(),
     }));
 
     const uniqueCategories = Array.from(

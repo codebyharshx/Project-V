@@ -10,6 +10,7 @@ import TestimonialSection from '@/components/home/TestimonialSection';
 import BlogGrid from '@/components/blog/BlogGrid';
 import CommunityPreview from '@/components/community/CommunityPreview';
 import NewsletterSection from '@/components/home/NewsletterSection';
+import { Product, BlogPost, CommunityPost } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Velorious — Intimate Wellness, Redefined',
@@ -108,25 +109,45 @@ export default async function HomePage() {
         }),
       ]);
 
-    // Serialize Decimal and Date fields for client components
-    const serializedProducts = serializeData(
-      featuredProducts.map((product) => ({
-        ...product,
-        id: product.id.toString(),
-        price: Number(product.price),
-        originalPrice: product.originalPrice
-          ? Number(product.originalPrice)
-          : undefined,
-        rating: Number(product.rating),
-      }))
-    );
+    // Transform data with proper typing for client components
+    const transformedProducts: Product[] = featuredProducts.map((product) => ({
+      id: product.id.toString(),
+      name: product.name,
+      slug: product.slug,
+      category: product.category,
+      price: Number(product.price),
+      originalPrice: product.originalPrice ? Number(product.originalPrice) : undefined,
+      description: product.description,
+      longDescription: product.longDescription,
+      features: product.features,
+      rating: Number(product.rating),
+      reviewCount: product.reviewCount,
+      badge: product.badge,
+      imageUrl: product.imageUrl,
+      color: product.color,
+      icon: product.icon,
+      active: product.active,
+      createdAt: product.createdAt.toISOString(),
+      updatedAt: product.updatedAt.toISOString(),
+    }));
 
-    const serializedPosts = serializeData(
-      latestPosts.map((post) => ({
-        ...post,
-        id: post.id.toString(),
-      }))
-    );
+    const transformedPosts: BlogPost[] = latestPosts.map((post) => ({
+      id: post.id,
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt,
+      content: post.content,
+      author: post.author,
+      authorInit: post.authorInit,
+      tag: post.tag,
+      tagIcon: post.tagIcon,
+      readTime: post.readTime,
+      featured: post.featured,
+      imageUrl: post.imageUrl,
+      published: post.published,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    }));
 
     const serializedTestimonials = serializeData(
       testimonials.map((testimonial) => ({
@@ -142,15 +163,20 @@ export default async function HomePage() {
       }))
     );
 
-    const serializedCommunityPosts = serializeData(
-      communityPosts.map((post) => ({
-        ...post,
-        id: post.id.toString(),
-        author: post.anonymousName,
-        content: post.body,
-        replyCount: post.commentCount,
-      }))
-    );
+    const transformedCommunityPosts: CommunityPost[] = communityPosts.map((post) => ({
+      id: post.id.toString(),
+      title: post.topic,
+      content: post.body,
+      author: post.anonymousName,
+      authorId: post.sessionId,
+      topic: post.topic,
+      replies: [],
+      replyCount: post.commentCount,
+      likes: post.likes,
+      liked: false,
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.createdAt.toISOString(),
+    }));
 
     return (
       <main className="w-full">
@@ -167,9 +193,9 @@ export default async function HomePage() {
         <CategoryGrid />
 
         {/* Featured Products Section */}
-        {serializedProducts && serializedProducts.length > 0 && (
+        {transformedProducts && transformedProducts.length > 0 && (
           <ProductGrid
-            products={serializedProducts}
+            products={transformedProducts}
             columns={4}
             title="Featured Collection"
             subtitle="Discover our most-loved intimate wellness products, carefully curated for you"
@@ -186,9 +212,9 @@ export default async function HomePage() {
         )}
 
         {/* Blog/Journal Section */}
-        {serializedPosts && serializedPosts.length > 0 && (
+        {transformedPosts && transformedPosts.length > 0 && (
           <BlogGrid
-            posts={serializedPosts}
+            posts={transformedPosts}
             title="The Journal"
             subtitle="Insights, stories, and expert perspectives on intimate wellness"
             showViewAll
@@ -196,8 +222,8 @@ export default async function HomePage() {
         )}
 
         {/* Community Preview Section */}
-        {serializedCommunityPosts && serializedCommunityPosts.length > 0 && (
-          <CommunityPreview posts={serializedCommunityPosts} />
+        {transformedCommunityPosts && transformedCommunityPosts.length > 0 && (
+          <CommunityPreview posts={transformedCommunityPosts} />
         )}
 
         {/* FAQ Section */}

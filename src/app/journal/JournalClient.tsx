@@ -19,9 +19,7 @@ export default function JournalClient({ initialPosts }: JournalClientProps) {
       return initialPosts;
     }
     return initialPosts.filter(post =>
-      post.tags && post.tags.some(tag =>
-        tag.toLowerCase() === selectedTag.toLowerCase()
-      )
+      post.tag && post.tag.toLowerCase() === selectedTag.toLowerCase()
     );
   }, [initialPosts, selectedTag]);
 
