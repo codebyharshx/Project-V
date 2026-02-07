@@ -122,9 +122,6 @@ const nextConfig: NextConfig = {
 
   /* React strict mode */
   reactStrictMode: true,
-
-  /* SWR config */
-  swcMinify: true,
 };
 
 export default nextConfig;
